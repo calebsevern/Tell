@@ -10,7 +10,9 @@ var Tell = {
 	width: 400,
 	height: $(".tell-dialog").height(),
 	active: false,
-	custom_location: false
+	custom_location: false,
+	state: "",
+	pending_callback: null
 };
 
 Tell.dismiss = function() {
@@ -18,6 +20,10 @@ Tell.dismiss = function() {
 	$(".tell-element").remove();
 	Tell.active = false;
 	Tell.custom_location = false;
+	if(Tell.state = "confirm" && Tell.pending_callback)
+		Tell.pending_callback(false);
+	Tell.state = "";
+	Tell.pending_callback = null;
 }
 
 Tell.center = function() {
@@ -40,6 +46,7 @@ Tell.reposition = function(x, y) {
 
 Tell.alert = function(message) {
 	Tell.dismiss();
+	Tell.state = "alert";
 	Tell.active = true;
 	$("body").append("<div class='tell-element tell-overlay'></div>");
 	
@@ -72,8 +79,10 @@ Tell.alert = function(message) {
 *		message: Message to display
 */
 
-Tell.confirm = function(message) {
+Tell.confirm = function(message, callback) {
 	Tell.dismiss();
+	Tell.state = "confirm";
+	Tell.pending_callback = callback;
 	Tell.active = true;
 	$("body").append("<div class='tell-element tell-overlay'></div>");
 	
@@ -84,7 +93,7 @@ Tell.confirm = function(message) {
 					'<div class="tell-element tell-body">' + 
 						'<div class="tell-element tell-content">' + 
 							message +
-							'<br><br><button class="tell-confirm-button">Okay</button> <button class="tell-confirm-button">No</button>' +
+							'<br><br><button class="tell-confirm-button tell-yes-button">Okay</button> <button class="tell-confirm-button tell-no-button">No</button>' +
 						'</div>' +
 					'</div>' + 
 				'</div>';
@@ -93,9 +102,17 @@ Tell.confirm = function(message) {
 	Tell.height = $(".tell-dialog").height();
 	Tell.center();
 	
-	document.querySelector(".tell-confirm-button").addEventListener('click', function() {
+	document.querySelector(".tell-yes-button").addEventListener('click', function() {
 		Tell.dismiss();
+		callback(true);
 	}, false);
+	
+	document.querySelector(".tell-no-button").addEventListener('click', function() {
+		Tell.dismiss();
+		callback(false);
+	}, false);
+	
+	
 };
 
 

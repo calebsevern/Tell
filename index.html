@@ -39,9 +39,14 @@
 			
 			<br><br>
 			
-			<pre><code class="language-javascript">Tell.confirm("Are you really, really sure about that?");</code></pre>
+			<pre><code class="language-javascript">Tell.confirm("Are you really, really sure about that?", function(decision) {
+	if(decision)
+		alert("You chose yes.");
+	else 
+		alert("You chose no.");
+});</code></pre>
 			
-			<br><br>
+			<br><br>Response: <text class="tell-reply">...</text>
 			
 			<button class="try-me simple-confirm">Alert</button>
 			
@@ -58,7 +63,12 @@
 				});
 				
 				$(".simple-confirm").click(function() {
-					Tell.confirm("Are you really, really sure about that?");
+					Tell.confirm("Are you really, really sure about that?", function(decision) {
+						if(decision)
+							$(".tell-reply").html("You chose yes.");
+						else 
+							$(".tell-reply").html("You chose no.");
+					});
 				});
 			});
 		</script>

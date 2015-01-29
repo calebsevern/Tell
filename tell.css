@@ -65,3 +65,13 @@
 				cursor: pointer;
 				background: #4183D7;
 			}
+			
+			.tell-content > .tell-no-button {
+				background: rgba(0, 0, 0, .2);
+			}
+			
+				.tell-no-button:hover {
+					background: rgba(0, 0, 0, .3);
+				}
+			
+			
