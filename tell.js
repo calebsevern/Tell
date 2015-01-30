@@ -15,12 +15,12 @@ var Tell = {
 	pending_callback: null
 };
 
-Tell.dismiss = function() {
+Tell.dismiss = function(passive) {
 	$(".tell-element").empty();
 	$(".tell-element").remove();
 	Tell.active = false;
 	Tell.custom_location = false;
-	if(Tell.state = "confirm" && Tell.pending_callback)
+	if(Tell.state == "confirm" && Tell.pending_callback && passive)
 		Tell.pending_callback(false);
 	Tell.state = "";
 	Tell.pending_callback = null;
@@ -93,7 +93,7 @@ Tell.confirm = function(message, callback) {
 					'<div class="tell-element tell-body">' + 
 						'<div class="tell-element tell-content">' + 
 							message +
-							'<br><br><button class="tell-confirm-button tell-yes-button">Okay</button> <button class="tell-confirm-button tell-no-button">No</button>' +
+							'<br><br><button class="tell-confirm-button tell-yes-button">Okay</button> <button class="tell-confirm-button tell-no-button">Cancel</button>' +
 						'</div>' +
 					'</div>' + 
 				'</div>';
@@ -103,16 +103,58 @@ Tell.confirm = function(message, callback) {
 	Tell.center();
 	
 	document.querySelector(".tell-yes-button").addEventListener('click', function() {
-		Tell.dismiss();
 		callback(true);
+		Tell.dismiss();
 	}, false);
 	
 	document.querySelector(".tell-no-button").addEventListener('click', function() {
-		Tell.dismiss();
 		callback(false);
+		Tell.dismiss();
+	}, false);
+};
+
+
+/*
+*	Prompts for a user value
+*	
+*	@params:
+*		message: Message to display
+*		callback: Function to execute on submission
+*/
+
+Tell.prompt = function(message, callback) {
+	Tell.dismiss();
+	Tell.state = "prompt";
+	Tell.pending_callback = callback;
+	Tell.active = true;
+	$("body").append("<div class='tell-element tell-overlay'></div>");
+	
+	var dialog = '<div class="tell-element tell-dialog" draggable="true" ondragstart="drag(event)">' +
+					'<div class="tell-element tell-titlebar">' + 
+						'<div class="tell-title">Confirm</div>' + 
+					'</div>' + 
+					'<div class="tell-element tell-body">' + 
+						'<div class="tell-element tell-content">' + 
+							'<div style="float: left;">' + message + '</div>' + 
+							'<br><br><input type="text" class="tell-prompt">' + 
+							'<br><br><button class="tell-confirm-button tell-yes-button">Okay</button> <button class="tell-confirm-button tell-no-button">Cancel</button>' +
+						'</div>' +
+					'</div>' + 
+				'</div>';
+				
+	$("body").append(dialog);
+	$(".tell-prompt").focus();
+	Tell.height = $(".tell-dialog").height();
+	Tell.center();
+	document.querySelector(".tell-yes-button").addEventListener('click', function() {
+		callback($(".tell-prompt").val());
+		Tell.dismiss();
 	}, false);
 	
-	
+	document.querySelector(".tell-no-button").addEventListener('click', function() {
+		callback(false);
+		Tell.dismiss();
+	}, false);
 };
 
 
@@ -131,7 +173,7 @@ window.onresize = function(event) {
 };
 
 $(document).on('click', '.tell-overlay', function() {
-	Tell.dismiss();
+	Tell.dismiss(true);
 });
 
 document.ondragover = function() {
