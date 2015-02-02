@@ -1,3 +1,4 @@
+
 var mouse = {x: 0, y: 0};
 
 document.addEventListener('mousemove', function(e){ 
@@ -5,6 +6,10 @@ document.addEventListener('mousemove', function(e){
     mouse.y = e.clientY || e.pageY 
 }, false);
 
+
+/*
+*	Primary object to store state, settings, etc.
+*/
 
 var Tell = {
 	width: 400,
@@ -14,6 +19,18 @@ var Tell = {
 	state: "",
 	pending_callback: null
 };
+
+
+
+/*
+*	Closes the current dialog
+*
+*	@params
+*		passive: boolean, false if the user closes the dialog
+*				 by clicking the 'cancel' button, true if the 
+*				 user closes the dialog by clicking somewhere 
+*				 on the page
+*/
 
 Tell.dismiss = function(passive) {
 	$(".tell-element").empty();
@@ -26,10 +43,21 @@ Tell.dismiss = function(passive) {
 	Tell.pending_callback = null;
 }
 
+
+/*
+*	Centers the dialog in the middle of the page
+*	according to the current window size
+*/
+
 Tell.center = function() {
 	document.querySelector(".tell-dialog").style.left = (($(window).width() / 2) - (Tell.width / 2)) + "px";
 	document.querySelector(".tell-dialog").style.top = (($(window).height() / 2) - (Tell.height / 2)) + "px";
 }
+
+
+/*
+*	Drag and drop functionality
+*/
 
 Tell.reposition = function(x, y) {	
 	document.querySelector(".tell-dialog").style.left = (x - Tell.width/2) + "px";
